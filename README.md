@@ -3,13 +3,13 @@ A small self-hosted toolbox of document utilities, running as a single PHP/Apach
 
 ## Features
 
-### 📄 Converter
+### Converter
 Convert a PDF file to EPUB, powered by [Calibre](https://calibre-ebook.com/)'s `ebook-convert` under the hood. Drag & drop or browse to upload.
 
-### 🔗 QR Generator
+### QR Generator
 Type any text or URL and get a live QR code preview, rendered client-side. Download it as a high-resolution PNG (1024×1024) suitable for print, regardless of the on-screen preview size.
 
-### 📚 CBZ/CBR Metadata Editor
+### CBZ/CBR Metadata Editor
 Read, edit, and rewrite `ComicInfo.xml` metadata inside comic archives, following the [ComicRack](https://wiki.mobileread.com/wiki/ComicRack) `ComicInfo.xml` standard:
 
 - Upload a `.cbz` or `.cbr` file.
@@ -36,7 +36,7 @@ docker compose up --build -d
 The app will be available on the port configured in `compose.yml` (default: `8218`).
 
 ### Volumes
-| Host path   | Container path          | Purpose                            |
+| Host path   | Container path           | Purpose                             |
 |-------------|--------------------------|-------------------------------------|
 | `./www`     | `/var/www/html`          | Application code                    |
 | `./uploads` | `/var/www/html/uploads`  | Temporary uploads & working files   |
