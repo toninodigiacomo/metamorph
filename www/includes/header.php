@@ -9,6 +9,11 @@ require_once __DIR__ . '/i18n.php';
 <head>
     <meta charset="UTF-8">
     <title><?= htmlspecialchars($pageTitle ?? 'Metamorph') ?></title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent: rgb(255, 90, 31);
@@ -35,7 +40,15 @@ require_once __DIR__ . '/i18n.php';
             flex-wrap: wrap;
             gap: 12px;
         }
-        header .brand { font-weight: 600; font-size: 1.1rem; }
+        header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Poppins', system-ui, sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+        }
+        header .brand img { height: 32px; width: 32px; }
 
         /* Menu en segments collés, aligné à droite */
         nav.tabs {
@@ -285,7 +298,7 @@ require_once __DIR__ . '/i18n.php';
 </head>
 <body>
     <header>
-        <div class="brand">Metamorph</div>
+        <div class="brand"><img src="assets/logo.png" alt="Metamorph"> Metamorph</div>
         <div style="display:flex; align-items:center; gap:16px;">
             <div class="lang-switch">
                 <?php foreach (SUPPORTED_LANGS as $l): ?>

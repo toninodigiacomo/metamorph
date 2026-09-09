@@ -44,6 +44,8 @@ $TRANSLATIONS = [
     // --- Page Convertisseur ---
     'conv_type_label'   => ['en' => 'Conversion type',      'fr' => 'Type de conversion',      'it' => 'Tipo di conversione',   'de' => 'Konvertierungstyp'],
     'conv_option_pdf_epub' => ['en' => 'PDF to EPUB',       'fr' => 'PDF vers EPUB',            'it' => 'PDF in EPUB',           'de' => 'PDF zu EPUB'],
+    'conv_option_png_ico'  => ['en' => 'PNG to ICO',        'fr' => 'PNG vers ICO',              'it' => 'PNG in ICO',            'de' => 'PNG zu ICO'],
+    'conv_option_svg_png'  => ['en' => 'SVG to PNG',        'fr' => 'SVG vers PNG',              'it' => 'SVG in PNG',            'de' => 'SVG zu PNG'],
     'conv_file_label'   => ['en' => 'File to convert',      'fr' => 'Fichier à convertir',      'it' => 'File da convertire',    'de' => 'Zu konvertierende Datei'],
     'conv_dropzone'     => [
         'en' => 'Drag & drop a file here<br>or click to browse',
