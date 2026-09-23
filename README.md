@@ -58,4 +58,4 @@ The app will be available on the port configured in `compose.yml` (default: `821
 ```
 
 ## License
-**GNU GPL v3.0** [LICENCE.md](https://github.com/toninodigiacomo/codex/blob/ced88567378bde78b3d0e61ee955449f240510e1/LICENSE.md)
+**GNU GPL v3.0** [LICENCE.md](https://github.com/toninodigiacomo/metamorph/blob/673aec2e5b1aa2c4d3e803c020e7ca3bf3d146c9/LICENSE.md)
