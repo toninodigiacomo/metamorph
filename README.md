@@ -58,4 +58,4 @@ The app will be available on the port configured in `compose.yml` (default: `821
 ```
 
 ## License
-**MIT** [LICENCE.md](https://github.com/toninodigiacomo/pong-led-matrix/blob/f3098bfc4be7f9d33e8b683e3e7f83d1b701de16/LICENSE.md)
+**GNU GPL v3.0** [LICENCE.md](https://github.com/toninodigiacomo/codex/blob/ced88567378bde78b3d0e61ee955449f240510e1/LICENSE.md)
