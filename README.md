@@ -57,5 +57,7 @@ The app will be available on the port configured in `compose.yml` (default: `821
         └── i18n.php              # Translation dictionary + language detection
 ```
 
+---
+
 ## License
 **GNU GPL v3.0** [LICENCE.md](https://github.com/toninodigiacomo/metamorph/blob/673aec2e5b1aa2c4d3e803c020e7ca3bf3d146c9/LICENSE.md)
