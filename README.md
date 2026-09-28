@@ -1,3 +1,5 @@
+<p align="center"><img src="www/assets/logo.png" width="140" alt="Vigie logo"></p>
+
 # Metamorph
 A small self-hosted toolbox of document utilities, running as a single PHP/Apache container. No database, no accounts — just a handful of focused tools behind one web UI.
 
