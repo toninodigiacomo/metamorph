@@ -33,7 +33,7 @@ require_once __DIR__ . '/i18n.php';
         header {
             background: #000;
             color: #fff;
-            padding: 14px 28px;
+            padding: 20px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -43,12 +43,12 @@ require_once __DIR__ . '/i18n.php';
         header .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 14px;
             font-family: 'Poppins', system-ui, sans-serif;
             font-weight: 700;
-            font-size: 1.6rem;
+            font-size: 1.9rem;
         }
-        header .brand img { height: 32px; width: 32px; }
+        header .brand img { height: 48px; width: 48px; }
 
         /* Menu en segments collés, aligné à droite */
         nav.tabs {
@@ -118,6 +118,29 @@ require_once __DIR__ . '/i18n.php';
             font-size: 0.95rem;
         }
 
+        /* Sélecteur entrée/sortie (page Convertisseur) */
+        .conversion-picker {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .conversion-picker .field { flex: 1; min-width: 0; }
+        .conversion-picker select { margin-bottom: 0; }
+        .conversion-picker .swap-icon {
+            flex: 0 0 auto;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin-bottom: 1px;
+        }
+
         button {
             background: var(--accent);
             color: #fff;
@@ -136,6 +159,36 @@ require_once __DIR__ . '/i18n.php';
             border: 1px solid #ccc;
         }
         button.btn-secondary:hover { background: #f2f2f2; color: #555; }
+
+        /* Bouton avec remplissage de progression (page Convertisseur) */
+        button.loading {
+            position: relative;
+            overflow: hidden;
+            background: var(--accent-hover);
+            cursor: wait;
+        }
+        button.loading .fill {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 0%;
+            background: rgba(255, 255, 255, 0.28);
+            transition: width 0.15s ease;
+        }
+        button.loading .fill.indeterminate {
+            width: 100% !important;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.28) 0 10px,
+                rgba(255, 255, 255, 0.12) 10px 20px
+            );
+            background-size: 40px 40px;
+            animation: convert-stripes 1s linear infinite;
+        }
+        button .label { position: relative; z-index: 1; }
+        @keyframes convert-stripes {
+            from { background-position: 0 0; }
+            to { background-position: 40px 0; }
+        }
 
         .message { margin-top: 20px; padding: 14px; border-radius: 8px; background: #f4f4f4; font-size: 0.9rem; }
         .download { display: inline-block; margin-top: 10px; font-weight: 600; color: var(--accent); }
@@ -162,6 +215,18 @@ require_once __DIR__ . '/i18n.php';
             border-color: var(--accent);
             color: #222;
             font-weight: 600;
+        }
+        .dropzone.has-error {
+            border-style: solid;
+            border-color: #c0392b;
+            background: rgba(192, 57, 43, 0.05);
+            color: #c0392b;
+            font-weight: 600;
+        }
+        .field-error {
+            color: #c0392b;
+            font-size: 0.8rem;
+            margin: -14px 0 16px;
         }
 
         /* Aperçu QR code (page QR Générateur) */

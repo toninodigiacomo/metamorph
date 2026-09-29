@@ -43,6 +43,8 @@ $TRANSLATIONS = [
 
     // --- Page Convertisseur ---
     'conv_type_label'   => ['en' => 'Conversion type',      'fr' => 'Type de conversion',      'it' => 'Tipo di conversione',   'de' => 'Konvertierungstyp'],
+    'conv_input_label'  => ['en' => 'Input format',         'fr' => "Format d'entrée",          'it' => 'Formato di input',      'de' => 'Eingabeformat'],
+    'conv_output_label' => ['en' => 'Output format',        'fr' => 'Format de sortie',         'it' => 'Formato di output',     'de' => 'Ausgabeformat'],
     'conv_option_pdf_epub' => ['en' => 'PDF to EPUB',       'fr' => 'PDF vers EPUB',            'it' => 'PDF in EPUB',           'de' => 'PDF zu EPUB'],
     'conv_option_png_ico'  => ['en' => 'PNG to ICO',        'fr' => 'PNG vers ICO',              'it' => 'PNG in ICO',            'de' => 'PNG zu ICO'],
     'conv_option_svg_png'  => ['en' => 'SVG to PNG',        'fr' => 'SVG vers PNG',              'it' => 'SVG in PNG',            'de' => 'SVG zu PNG'],
@@ -54,6 +56,14 @@ $TRANSLATIONS = [
         'de' => 'Datei hierher ziehen<br>oder klicken zum Auswählen',
     ],
     'conv_btn_convert'  => ['en' => 'Convert', 'fr' => 'Convertir', 'it' => 'Converti', 'de' => 'Konvertieren'],
+    'conv_uploading'    => ['en' => 'Uploading… {pct}%', 'fr' => 'Envoi… {pct}%', 'it' => 'Caricamento… {pct}%', 'de' => 'Wird hochgeladen… {pct}%'],
+    'conv_processing'   => ['en' => 'Processing…', 'fr' => 'Traitement en cours…', 'it' => 'Elaborazione…', 'de' => 'Wird verarbeitet…'],
+    'conv_network_error' => [
+        'en' => 'Connection error — please try again.',
+        'fr' => 'Erreur de connexion — merci de réessayer.',
+        'it' => 'Errore di connessione — riprova.',
+        'de' => 'Verbindungsfehler — bitte erneut versuchen.',
+    ],
     'conv_err_unknown_type' => ['en' => 'Unknown conversion type.', 'fr' => 'Type de conversion inconnu.', 'it' => 'Tipo di conversione sconosciuto.', 'de' => 'Unbekannter Konvertierungstyp.'],
     'conv_err_upload'   => [
         'en' => 'Upload error (code {code}).',
@@ -87,6 +97,14 @@ $TRANSLATIONS = [
     ],
     'qr_preview_placeholder' => ['en' => 'The QR code will appear here', 'fr' => 'Le QR code apparaîtra ici', 'it' => 'Il codice QR apparirà qui', 'de' => 'Der QR-Code erscheint hier'],
     'qr_download'       => ['en' => 'Download QR code (PNG)', 'fr' => 'Télécharger le QR code (PNG)', 'it' => 'Scarica il codice QR (PNG)', 'de' => 'QR-Code herunterladen (PNG)'],
+    'qr_style_label'    => ['en' => 'Dot style', 'fr' => 'Style des points', 'it' => 'Stile dei punti', 'de' => 'Punktstil'],
+    'qr_style_square'   => ['en' => 'Squares', 'fr' => 'Carrés', 'it' => 'Quadrati', 'de' => 'Quadrate'],
+    'qr_style_dots'     => ['en' => 'Dots', 'fr' => 'Ronds', 'it' => 'Punti', 'de' => 'Punkte'],
+    'qr_style_rounded'  => ['en' => 'Rounded', 'fr' => 'Arrondi', 'it' => 'Arrotondato', 'de' => 'Abgerundet'],
+    'qr_style_classy'   => ['en' => 'Classy', 'fr' => 'Élégant', 'it' => 'Elegante', 'de' => 'Elegant'],
+    'qr_style_extra_rounded' => ['en' => 'Extra rounded', 'fr' => 'Très arrondi', 'it' => 'Molto arrotondato', 'de' => 'Extra abgerundet'],
+    'qr_logo_label'     => ['en' => 'Center image (optional)', 'fr' => 'Image au centre (optionnel)', 'it' => 'Immagine al centro (opzionale)', 'de' => 'Bild in der Mitte (optional)'],
+    'qr_logo_remove'    => ['en' => 'Remove image', 'fr' => "Retirer l'image", 'it' => "Rimuovi immagine", 'de' => 'Bild entfernen'],
 
     // --- Page CBZ/CBR : import ---
     'cbz_file_label'    => ['en' => 'CBZ or CBR file', 'fr' => 'Fichier CBZ ou CBR', 'it' => 'File CBZ o CBR', 'de' => 'CBZ- oder CBR-Datei'],

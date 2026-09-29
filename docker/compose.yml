@@ -32,6 +32,8 @@ services:
             libjpeg62-turbo-dev \
             libwebp-dev \
             librsvg2-bin \
+            imagemagick \
+            potrace \
             && docker-php-ext-configure gd --with-jpeg --with-webp \
             && docker-php-ext-install gd zip \
             && rm -rf /var/lib/apt/lists/*
@@ -42,7 +44,35 @@ services:
         RUN mkdir -p /var/www/html/uploads /var/www/html/output /var/www/html/uploads/cbz_work \
             && chown -R www-data:www-data /var/www/html/uploads /var/www/html/output
 
-        RUN a2enmod rewrite
+        RUN a2enmod rewrite headers
+
+        # Durcissement ImageMagick : ne désactive QUE les coders jamais utilisés par Metamorph
+        # (délégués Ghostscript/PS/PDF, MSL, accès réseau, etc. — connus pour des CVE d'exécution
+        # de code). PSD/PNG/JPEG/GIF/WEBP restent pleinement autorisés. Les règles ajoutées en fin
+        # de fichier priment sur celles définies plus haut (ImageMagick applique la dernière
+        # correspondance), donc c'est sûr même si des règles par défaut existent déjà.
+        RUN POLICY_FILE=$(find /etc -iname "policy.xml" -path "*ImageMagick*" | head -1) && \
+            for pattern in PS PS2 PS3 EPS PDF XPS MVG MSL TEXT SHOW WIN PLT URL HTTPS HTTP EPHEMERAL; do \
+              sed -i "/<\/policymap>/i\\  <policy domain=\"coder\" rights=\"none\" pattern=\"$pattern\" />" "$POLICY_FILE"; \
+            done
+
+        # Interdit l'accès HTTP direct à uploads/ et output/ : ces dossiers sont dans le
+        # DocumentRoot (nécessaire pour que le montage de volume fonctionne simplement), mais
+        # tout téléchargement légitime passe déjà par index.php/comicinfo.php/thumb.php, qui
+        # valident le nom de fichier — un accès direct par URL devinée ne devrait jamais marcher.
+        RUN { \
+              echo '<Directory "/var/www/html/uploads">'; \
+              echo '    Require all denied'; \
+              echo '</Directory>'; \
+              echo '<Directory "/var/www/html/output">'; \
+              echo '    Require all denied'; \
+              echo '</Directory>'; \
+              echo ''; \
+              echo 'Header always set X-Content-Type-Options "nosniff"'; \
+              echo 'Header always set X-Frame-Options "DENY"'; \
+              echo 'Header always set Referrer-Policy "strict-origin-when-cross-origin"'; \
+            } > /etc/apache2/conf-available/metamorph-hardening.conf \
+            && a2enconf metamorph-hardening
 
         # Augmente les limites d'upload PHP (par défaut 8 Mo, insuffisant pour des PDF/EPUB)
         RUN { \

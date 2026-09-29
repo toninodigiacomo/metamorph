@@ -100,6 +100,24 @@ function findComicInfoXml(string $dir): ?string {
     return null;
 }
 
+/**
+ * Valide qu'aucune entrée du ZIP ne peut écrire en dehors du dossier d'extraction
+ * (protection "Zip Slip" : chemin absolu, remontée "..", caractères de contrôle).
+ * ZipArchive::extractTo() ne fait pas cette vérification lui-même.
+ */
+function zipEntriesAreSafe(ZipArchive $zip): bool {
+    for ($i = 0; $i < $zip->numFiles; $i++) {
+        $name = $zip->getNameIndex($i);
+        if ($name === false || $name === '') {
+            return false;
+        }
+        if ($name[0] === '/' || strpos($name, '..') !== false || preg_match('/[\x00-\x1f]/', $name)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function listImages(string $dir): array {
     $files = [];
     foreach (scandir($dir) as $entry) {
@@ -155,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'analy
         if (!in_array($ext, ['cbz', 'cbr', 'zip', 'rar'], true)) {
             $message = t('cbz_err_type');
         } else {
-            $id = uniqid('cbz_', true);
+            $id = 'cbz_' . bin2hex(random_bytes(16)); // identifiant de session cryptographiquement aléatoire
             $dir = $workRoot . '/' . $id;
             mkdir($dir, 0775, true);
 
@@ -171,9 +189,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'analy
             } else {
                 $zip = new ZipArchive();
                 if ($zip->open($tmpUpload) === true) {
-                    $zip->extractTo($dir);
+                    if (zipEntriesAreSafe($zip)) {
+                        $zip->extractTo($dir);
+                        $extractOk = true;
+                    }
                     $zip->close();
-                    $extractOk = true;
                 }
             }
             @unlink($tmpUpload);
@@ -186,7 +206,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'analy
 
                 $xmlPath = findComicInfoXml($effectiveDir);
                 if ($xmlPath) {
-                    $xml = @simplexml_load_file($xmlPath);
+                    // LIBXML_NONET : interdit toute résolution réseau pendant le parsing (défense
+                    // en profondeur — libxml2 récent désactive déjà les entités externes par défaut).
+                    $xml = @simplexml_load_file($xmlPath, 'SimpleXMLElement', LIBXML_NONET);
                     if ($xml !== false) {
                         foreach ($xml as $key => $value) {
                             $fields[(string)$key] = (string)$value;
@@ -295,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save'
 
         // Recompression en CBZ (le RAR n'est pas réinscriptible sans outil propriétaire)
         $outBase = preg_replace('/[^A-Za-z0-9._-]+/', '_', $state['original_base'] ?? 'comic');
-        $outName = $outBase . '.cbz';
+        $outName = $outBase . '-' . bin2hex(random_bytes(4)) . '.cbz'; // suffixe aléatoire : pas de collision ni de nom devinable
         $outPath = $outputDir . '/' . $outName;
 
         if (zipDirectory($effectiveDir, $outPath)) {
