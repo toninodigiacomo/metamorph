@@ -1,3 +1,5 @@
+<p align="center"><img src="www/assets/logo.png" width="140" alt="Vigie logo"></p>
+
 # Metamorph
 A small self-hosted toolbox of document utilities, running as a single PHP/Apache container. No database, no accounts — just a handful of focused tools behind one web UI.
 
@@ -57,5 +59,7 @@ The app will be available on the port configured in `compose.yml` (default: `821
         └── i18n.php              # Translation dictionary + language detection
 ```
 
+---
+
 ## License
-**MIT** [LICENCE.md](https://github.com/toninodigiacomo/pong-led-matrix/blob/f3098bfc4be7f9d33e8b683e3e7f83d1b701de16/LICENSE.md)
+**GNU GPL v3.0** [LICENCE.md](https://github.com/toninodigiacomo/metamorph/blob/673aec2e5b1aa2c4d3e803c020e7ca3bf3d146c9/LICENSE.md)
