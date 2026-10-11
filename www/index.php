@@ -11,10 +11,17 @@ $message = '';
 $downloadFile = null;
 
 $conversions = [
-    'pdf' => ['epub' => ['engine' => 'calibre']],
-    'png' => ['ico'  => ['engine' => 'ico']],
+    'pdf' => [
+        'epub' => ['engine' => 'calibre'],
+        'cbz'  => ['engine' => 'pdfcbz'],
+    ],
+    'png' => [
+        'ico' => ['engine' => 'ico'],
+        'svg' => ['engine' => 'vectorize'],
+    ],
     'svg' => ['png'  => ['engine' => 'rsvg']],
     'cbr' => ['cbz'  => ['engine' => 'repack']],
+    'psd' => ['png'  => ['engine' => 'psd']],
 ];
 
 // Mime-types pour le téléchargement, selon l'extension du fichier produit
@@ -23,6 +30,7 @@ const OUTPUT_MIME_TYPES = [
     'ico'  => 'image/vnd.microsoft.icon',
     'png'  => 'image/png',
     'cbz'  => 'application/vnd.comicbook+zip',
+    'svg'  => 'image/svg+xml',
 ];
 
 function rrmdirLocal(string $dir): void {
@@ -133,6 +141,91 @@ function repackCbrToCbz(string $srcPath, string $outPath): bool {
     return true;
 }
 
+/**
+ * Aplatit un PSD (Photoshop) en PNG via ImageMagick. Combine tous les calques
+ * visibles en une seule image composite — ne récupère pas de vecteurs même si
+ * le PSD en contient (voir vectorizePngToSvg ci-dessous pour ce cas).
+ */
+function psdToPng(string $srcPath, string $outPath): array {
+    $cmd = sprintf(
+        'convert %s -flatten %s 2>&1',
+        escapeshellarg($srcPath . '[0]'),
+        escapeshellarg($outPath)
+    );
+    exec($cmd, $outputLines, $returnCode);
+    return [$returnCode === 0 && file_exists($outPath), $outputLines];
+}
+
+/**
+ * Vectorisation automatique (auto-trace) d'un PNG en SVG via potrace.
+ * Approximation par contours en noir et blanc — convient à un logo ou une
+ * illustration à aplats nets, pas à une photo ou un dégradé complexe.
+ */
+function vectorizePngToSvg(string $srcPath, string $outPath): array {
+    $pbmPath = $srcPath . '.pbm';
+
+    // Étape 1 : conversion en bitmap noir/blanc (seuil 50%)
+    $cmd1 = sprintf(
+        'convert %s -alpha remove -alpha off -colorspace Gray -threshold 50%% %s 2>&1',
+        escapeshellarg($srcPath),
+        escapeshellarg($pbmPath)
+    );
+    exec($cmd1, $out1, $code1);
+    if ($code1 !== 0 || !file_exists($pbmPath)) {
+        return [false, $out1];
+    }
+
+    // Étape 2 : vectorisation du bitmap en SVG
+    $cmd2 = sprintf(
+        'potrace %s -s -o %s 2>&1',
+        escapeshellarg($pbmPath),
+        escapeshellarg($outPath)
+    );
+    exec($cmd2, $out2, $code2);
+    @unlink($pbmPath);
+
+    return [$code2 === 0 && file_exists($outPath), $out2];
+}
+
+/**
+ * Convertit un PDF en CBZ : chaque page est rendue en image JPEG (pdftoppm, poppler-utils,
+ * sans passer par Ghostscript/ImageMagick), nommée P00001.jpg, P00002.jpg, … (standard
+ * ComicRack), puis le tout est zippé. Les pages sont rendues à 150 dpi, qualité JPEG 85.
+ */
+function pdfToCbz(string $srcPath, string $outPath): array {
+    $tmpDir = sys_get_temp_dir() . '/pdf_cbz_' . bin2hex(random_bytes(8));
+    mkdir($tmpDir, 0775, true);
+
+    $cmd = sprintf(
+        'pdftoppm -jpeg -jpegopt quality=85 -r 150 %s %s 2>&1',
+        escapeshellarg($srcPath),
+        escapeshellarg($tmpDir . '/page')
+    );
+    exec($cmd, $outputLines, $code);
+
+    $pages = glob($tmpDir . '/page-*.jpg') ?: [];
+    if ($code !== 0 || count($pages) === 0) {
+        rrmdirLocal($tmpDir);
+        return [false, $outputLines];
+    }
+
+    // pdftoppm zéro-padde selon le nombre de pages ; natsort garantit l'ordre correct
+    natsort($pages);
+    $zip = new ZipArchive();
+    if ($zip->open($outPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        rrmdirLocal($tmpDir);
+        return [false, ['zip']];
+    }
+    $i = 1;
+    foreach ($pages as $page) {
+        $zip->addFile($page, sprintf('P%05d.jpg', $i++));
+    }
+    $zip->close();
+
+    rrmdirLocal($tmpDir);
+    return [file_exists($outPath), []];
+}
+
 // Sélection courante (conservée après soumission, sinon première paire valide par défaut)
 $inputExts = array_keys($conversions);
 $selectedFrom = $_POST['from_ext'] ?? $inputExts[0];
@@ -193,6 +286,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['document'])) {
                         $errorDetail = $ok ? '' : "<br><pre>" . htmlspecialchars(implode("\n", $outputLines)) . "</pre>";
                     } elseif ($engine === 'repack') {
                         $ok = repackCbrToCbz($inputPath, $outputPath);
+                    } elseif ($engine === 'pdfcbz') {
+                        [$ok, $outputLines] = pdfToCbz($inputPath, $outputPath);
+                        $errorDetail = $ok ? '' : "<br><pre>" . htmlspecialchars(implode("\n", $outputLines)) . "</pre>";
+                    } elseif ($engine === 'psd') {
+                        [$ok, $outputLines] = psdToPng($inputPath, $outputPath);
+                        $errorDetail = $ok ? '' : "<br><pre>" . htmlspecialchars(implode("\n", $outputLines)) . "</pre>";
+                    } elseif ($engine === 'vectorize') {
+                        [$ok, $outputLines] = vectorizePngToSvg($inputPath, $outputPath);
+                        $errorDetail = $ok ? '' : "<br><pre>" . htmlspecialchars(implode("\n", $outputLines)) . "</pre>";
                     }
 
                     if ($ok) {
